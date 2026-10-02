@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f7f6c">
+<meta name="description" content="Prayer times, fasting, Qibla and a tasbeeh garden.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Falah">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Falah — Prayer Times</title>
+<style>
+  :root {
+    --bg: #f5f4ef;
+    --card: #fdfcf9;
+    --text: #22302b;
+    --muted: #75847c;
+    --line: #e6e4db;
+    --accent: #2e7d6b;
+    --accent-soft: #e3efe9;
+    --accent-text: #ffffff;
+    --gold: #b3862f;
+    --gold-soft: #f4ecd8;
+    --hero1: #31836f;
+    --hero2: #1f5a4c;
+    --danger: #b3382c;
+    --shadow: 0 1px 2px rgba(34,48,43,.05), 0 8px 24px rgba(34,48,43,.06);
+    --sky1: #cfe6e3; --sky2: #f8efdc; --sun: #f6dd9a; --cloud: rgba(255,255,255,.75);
+    --hill: #b7d6ae; --hill2: #a2caa0; --soil: #8d6c50; --soil2: #6c4f39; --lawn: #8fc08a;
+    --leaf: #4f9a6a; --leaf2: #3b7c55; --trunk: #7a5a3f; --water: #9fd3e6; --stone: #d9d3c3; --ink: #4a5a55;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1614; --card: #15201d; --text: #e7efea; --muted: #8ba198; --line: #24332e;
+      --accent: #5ec2a2; --accent-soft: #1b3a31; --accent-text: #08150f;
+      --gold: #d9b45f; --gold-soft: #3a3320; --hero1: #21544a; --hero2: #12302a;
+      --danger: #ef7a6c; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+      --sky1: #11202a; --sky2: #243a3d; --sun: #e6ecf0; --cloud: rgba(255,255,255,.12);
+      --hill: #25443a; --hill2: #1d382f; --soil: #4b3a2e; --soil2: #382b22; --lawn: #2e5a44;
+      --leaf: #3f8a62; --leaf2: #2f6b4c; --trunk: #5d4632; --water: #5fa3bd; --stone: #565a59; --ink: #c9d6d0;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1614; --card: #15201d; --text: #e7efea; --muted: #8ba198; --line: #24332e;
+    --accent: #5ec2a2; --accent-soft: #1b3a31; --accent-text: #08150f;
+    --gold: #d9b45f; --gold-soft: #3a3320; --hero1: #21544a; --hero2: #12302a;
+    --danger: #ef7a6c; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    --sky1: #11202a; --sky2: #243a3d; --sun: #e6ecf0; --cloud: rgba(255,255,255,.12);
+    --hill: #25443a; --hill2: #1d382f; --soil: #4b3a2e; --soil2: #382b22; --lawn: #2e5a44;
+    --leaf: #3f8a62; --leaf2: #2f6b4c; --trunk: #5d4632; --water: #5fa3bd; --stone: #565a59; --ink: #c9d6d0;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.45; min-height: 100vh;
+  }
+  .serif { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  .hidden { display: none !important; }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+  #app { padding-bottom: calc(86px + env(safe-area-inset-bottom)); }
+
+  /* header */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 0 14px; }
+  .brand { font-size: 1.6rem; font-weight: 600; color: var(--accent); letter-spacing: .01em; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; max-width: 60%;
+    font: inherit; font-size: .82rem; color: var(--muted); background: var(--card);
+    border: 1px solid var(--line); border-radius: 99px; padding: 6px 12px; cursor: pointer;
+  }
+  .chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* cards & type */
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+    padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow);
+  }
+  h2 { margin: 0 0 4px; font-size: 1.25rem; font-weight: 600; }
+  .sub { color: var(--muted); font-size: .88rem; }
+  .eyebrow { font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+
+  /* buttons & inputs */
+  .btn {
+    font: inherit; cursor: pointer; border-radius: 12px; padding: 10px 16px;
+    border: 1px solid var(--line); background: transparent; color: var(--text);
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
+  .btn.block { width: 100%; }
+  .btn:disabled { opacity: .55; cursor: default; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  input[type=text], select {
+    font: inherit; width: 100%; padding: 10px 12px; border-radius: 12px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--text);
+  }
+  .row { display: flex; gap: 8px; }
+  .or { text-align: center; color: var(--muted); font-size: .8rem; margin: 12px 0; }
+  .msg { margin-top: 10px; font-size: .86rem; color: var(--muted); }
+  .msg.error { color: var(--danger); }
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 6px; }
+  .hint { color: var(--muted); font-size: .78rem; margin-top: 5px; }
+
+  /* hero (countdown) */
+  .hero {
+    background: linear-gradient(160deg, var(--hero1), var(--hero2));
+    color: #fff; border: none; text-align: center; padding: 28px 18px 24px;
+  }
+  .hero.gold { background: linear-gradient(160deg, #b98e3b, #7d5c1c); }
+  .hero .eyebrow { color: rgba(255,255,255,.75); }
+  .hero .big { font-size: 2.1rem; font-weight: 600; margin: 4px 0 0; }
+  .hero .at { color: rgba(255,255,255,.8); font-size: .95rem; }
+  .count { font-size: 2.8rem; font-weight: 600; margin-top: 12px; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+  .progress { height: 6px; background: rgba(255,255,255,.22); border-radius: 99px; margin: 16px 6px 0; overflow: hidden; }
+  .progress > i { display: block; height: 100%; background: #fff; border-radius: 99px; width: 0; transition: width 1s linear; }
+
+  .dates { text-align: center; margin: 2px 0 16px; }
+  .dates .h { font-size: 1.05rem; font-weight: 600; }
+  .dates .g { color: var(--muted); font-size: .86rem; }
+
+  .strip {
+    display: flex; justify-content: space-between; align-items: center; width: 100%;
+    background: var(--gold-soft); color: var(--gold); border: 1px solid var(--gold);
+    border-radius: 14px; padding: 10px 14px; margin-bottom: 14px; font: inherit; font-size: .9rem; cursor: pointer;
+  }
+  .strip b { font-variant-numeric: tabular-nums; }
+
+  /* segmented */
+  .seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--accent-soft); border-radius: 12px; padding: 3px; margin-bottom: 14px; }
+  .seg button {
+    font: inherit; border: 0; background: transparent; color: var(--muted); padding: 8px; border-radius: 10px; cursor: pointer;
+  }
+  .seg button[aria-pressed="true"] { background: var(--card); color: var(--text); font-weight: 600; box-shadow: var(--shadow); }
+
+  /* prayer list */
+  ul.times { list-style: none; margin: 0; padding: 0; }
+  ul.times li { display: flex; justify-content: space-between; align-items: center; padding: 13px 14px; border-radius: 14px; font-size: 1.02rem; }
+  ul.times li .t { font-variant-numeric: tabular-nums; font-weight: 600; }
+  ul.times li.passed { color: var(--muted); }
+  ul.times li.passed .t { font-weight: 500; }
+  ul.times li.sunrise .n { font-size: .95rem; }
+  ul.times li.next { background: var(--accent-soft); color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); }
+  ul.times li.next .n::after {
+    content: "NEXT"; margin-left: 10px; font-size: .62rem; letter-spacing: .1em;
+    background: var(--accent); color: var(--accent-text); padding: 2px 7px; border-radius: 99px; vertical-align: middle;
+  }
+
+  /* month */
+  .month-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+  .month-head .btn { padding: 6px 12px; }
+  .month-title { text-align: center; }
+  .month-title b { font-size: 1.1rem; }
+  .tbl-wrap { overflow: auto; max-height: calc(100vh - 290px); min-height: 280px; margin-top: 10px; border-radius: 12px; position: relative; }
+  table { border-collapse: collapse; width: 100%; font-size: .82rem; font-variant-numeric: tabular-nums; }
+  th { position: sticky; top: 0; background: var(--card); z-index: 1; color: var(--muted); font-weight: 600; font-size: .72rem; padding: 8px 2px; box-shadow: 0 1px 0 var(--line); }
+  td { padding: 9px 2px; text-align: center; border-bottom: 1px solid var(--line); }
+  td:first-child, th:first-child { text-align: left; padding-left: 8px; }
+  td:first-child small { display: block; color: var(--muted); font-size: .68rem; }
+  tr.today td { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+  tr.fri td:first-child { color: var(--gold); }
+
+  /* fasting */
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .pair .card { text-align: center; margin-bottom: 14px; }
+  .pair .time { font-size: 1.5rem; font-weight: 600; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .badge { display: inline-block; font-size: .75rem; padding: 3px 12px; border-radius: 99px; margin-bottom: 10px;
+    background: rgba(255,255,255,.18); color: #fff; border: 1px solid rgba(255,255,255,.5); }
+
+  /* qibla */
+  .compass { width: min(300px, 80vw); display: block; margin: 4px auto 8px; overflow: visible; }
+  .compass .ring { fill: var(--card); stroke: var(--line); stroke-width: 2; }
+  .compass .tick { stroke: var(--muted); stroke-width: 1.5; }
+  .compass text { fill: var(--muted); font-size: 14px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+  .compass .north { fill: var(--danger); }
+  .compass .q { stroke: var(--gold); stroke-width: 3; stroke-linecap: round; }
+  .compass .kaaba { fill: var(--gold); }
+  .compass .pointer { fill: var(--accent); }
+  .compass.aligned .ring { stroke: var(--accent); stroke-width: 4; }
+  .qibla-deg { text-align: center; font-size: 2rem; font-weight: 600; }
+  .qibla-status { text-align: center; font-weight: 600; min-height: 1.5em; margin: 4px 0 12px; }
+  .qibla-status.ok { color: var(--accent); }
+
+  /* bottom nav */
+  nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+    background: var(--card); border-top: 1px solid var(--line);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  nav .inner { max-width: 480px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); }
+  nav button {
+    font: inherit; font-size: .72rem; background: none; border: 0; color: var(--muted); cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 4px 9px; position: relative;
+  }
+  nav svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  nav button[aria-current="page"] { color: var(--accent); font-weight: 600; }
+  nav .dot { position: absolute; top: 8px; left: calc(50% + 8px); width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
+
+  /* tasbeeh garden */
+  .stats3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+  .stat { padding: 9px 6px; text-align: center; margin: 0; }
+  .stat .v { font-size: 1.4rem; font-weight: 600; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .stat .sub { font-size: .72rem; }
+  .garden-card { padding: 10px; }
+  .garden { display: block; width: 100%; height: auto; border-radius: 14px; }
+  .garden-cap { display: flex; flex-direction: column; align-items: center; padding: 8px 6px 0; text-align: center; }
+  .garden-cap b { font-size: 1.05rem; }
+  .garden-cap .sub { font-size: .8rem; }
+  .garden-card .msg { text-align: center; margin: 2px 0 4px; }
+  .garden .sun { fill: var(--sun); opacity: .85; }
+  .garden .cloud ellipse { fill: var(--cloud); }
+  .garden .cloud { animation: cloud 70s ease-in-out infinite alternate; }
+  .garden .cloud.c2 { animation-duration: 95s; animation-direction: alternate-reverse; }
+  @keyframes cloud { from { transform: translateX(-14px); } to { transform: translateX(26px); } }
+  .garden .hill1 { fill: var(--hill); }
+  .garden .hill2 { fill: var(--hill2); }
+  .garden .soil { fill: var(--soil); }
+  .garden .furrow { stroke: var(--soil2); fill: none; stroke-width: 2; stroke-linecap: round; opacity: .45; }
+  .garden .lawn { fill: var(--lawn); opacity: 0; transition: opacity 3s ease; }
+  .garden .plants { filter: saturate(calc(1 - var(--wilt, 0) * .75)) brightness(calc(1 - var(--wilt, 0) * .12)); transition: filter 3s ease; }
+  .garden .wilt { transform-box: fill-box; transform-origin: 50% 100%;
+    transform: scaleY(calc(1 - var(--wilt, 0) * .2)) skewX(calc(var(--wilt, 0) * 8deg)); transition: transform 3s ease; }
+  .garden .grow { transform-box: fill-box; transform-origin: 50% 100%; animation: grow 2s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--d, 0s); }
+  @keyframes grow { from { transform: scale(.15); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .garden .sway { transform-box: fill-box; transform-origin: 50% 100%; animation: sway 6s ease-in-out infinite alternate; animation-delay: var(--sd, 0s); }
+  @keyframes sway { from { transform: rotate(-1.5deg); } to { transform: rotate(1.5deg); } }
+  .garden .sk { stroke: var(--leaf); fill: none; stroke-width: 2; stroke-linecap: round; }
+  .garden .sk2 { stroke: var(--leaf2); fill: none; stroke-width: 2; stroke-linecap: round; }
+  .garden .fl { fill: var(--leaf); }
+  .garden .fl2 { fill: var(--leaf2); }
+  .garden .seed1 { fill: var(--soil2); }
+  .garden .trunk { fill: var(--trunk); }
+  .garden .stone { fill: var(--stone); }
+  .garden .water { fill: var(--water); opacity: .9; }
+  .garden .jet { stroke: var(--water); fill: none; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 3 5; animation: flow 1.4s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -16; } }
+  .garden .ripple { fill: none; stroke: #fff; stroke-width: 1; transform-box: fill-box; transform-origin: center; animation: ripple 3.2s ease-out infinite; }
+  @keyframes ripple { from { transform: scale(.3); opacity: .6; } to { transform: scale(1.15); opacity: 0; } }
+  .garden .fadein { animation: fadein 3s ease both; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  .garden .bird { stroke: var(--ink); fill: none; stroke-width: 1.6; stroke-linecap: round; opacity: .8; }
+  .garden .fly { animation: fly var(--dur, 45s) linear infinite; animation-delay: var(--del, 0s); }
+  @keyframes fly { from { transform: translateX(-30px); } to { transform: translateX(390px); } }
+  .garden .bob { animation: bob 2.6s ease-in-out infinite alternate; }
+  @keyframes bob { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+  .garden .drift { animation: drift var(--dur, 18s) ease-in-out infinite alternate; }
+  @keyframes drift { 0% { transform: translate(0, 0); } 35% { transform: translate(26px, -12px); } 70% { transform: translate(-12px, -22px); } 100% { transform: translate(18px, -6px); } }
+  .garden .flap { transform-box: fill-box; transform-origin: center; animation: flap .5s ease-in-out infinite alternate; }
+  @keyframes flap { from { transform: scaleX(1); } to { transform: scaleX(.35); } }
+  @media (prefers-reduced-motion: reduce) { .garden * { animation: none !important; transition: none !important; } }
+
+  .pills { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; }
+  .pills::-webkit-scrollbar { display: none; }
+  .pill {
+    flex: none; font: inherit; font-size: .85rem; padding: 7px 14px; border-radius: 99px; cursor: pointer;
+    border: 1px solid var(--line); background: transparent; color: var(--muted);
+  }
+  .pill[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+  .stack input { margin-bottom: 8px; }
+  input[type=number] { font: inherit; width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--text); }
+  .dh { text-align: center; padding: 4px 0 2px; }
+  .dh .ar { font-family: "Amiri", "Noto Naskh Arabic", "Scheherazade New", "Traditional Arabic", serif; font-size: 1.9rem; line-height: 1.6; }
+  .dh .tr { font-size: 1.15rem; font-weight: 600; color: var(--accent); }
+  .tap {
+    position: relative; width: min(196px, 54vw); aspect-ratio: 1; border-radius: 50%; border: 0; margin: 8px auto 4px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 35% 28%, var(--hero1), var(--hero2)); color: #fff; cursor: pointer;
+    box-shadow: 0 10px 30px rgba(31,90,76,.25); touch-action: manipulation; user-select: none; -webkit-user-select: none;
+    transition: transform .12s ease;
+  }
+  .tap:active { transform: scale(.97); }
+  .tap svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); pointer-events: none; }
+  .tap .track { fill: none; stroke: rgba(255,255,255,.2); stroke-width: 3.5; }
+  .tap .fill { fill: none; stroke: #fff; stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 289.03; transition: stroke-dashoffset .35s ease; }
+  .tap .num { font-size: 3.2rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+  .tap .of { font-size: .85rem; opacity: .8; margin-top: 6px; }
+  .tap-msg { text-align: center; min-height: 1.5em; color: var(--accent); font-weight: 600; font-size: .92rem; margin-bottom: 10px; }
+  .sect-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 6px 0 6px; }
+
+  /* offline note */
+  .offline {
+    display: flex; align-items: center; justify-content: center; gap: 8px; width: fit-content; max-width: 100%;
+    margin: 0 auto 12px; padding: 6px 14px; border-radius: 99px; text-align: center; font-size: .8rem;
+    background: var(--gold-soft); color: var(--gold); border: 1px solid var(--gold);
+  }
+  .offline i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+
+  /* welcome */
+  #welcome { padding-top: 12vh; padding-bottom: 40px; }
+  #welcome .brand { font-size: 2.4rem; text-align: center; }
+  #welcome .lead { text-align: center; color: var(--muted); margin: 4px 0 24px; }
+
+  footer { text-align: center; color: var(--muted); font-size: .75rem; margin: 8px 0 0; }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+
+<!-- First-run welcome -->
+<main id="welcome" class="wrap hidden">
+  <div class="brand serif">Falah</div>
+  <p class="lead">Prayer times, fasting and Qibla — wherever you are.</p>
+  <div class="card">
+    <h2 class="serif">Where are you?</h2>
+    <p class="sub" style="margin:0 0 14px">Your location is used to calculate accurate prayer times. It stays on this device.</p>
+    <div id="welcomePanel"></div>
+  </div>
+</main>
+
+<div id="app" class="hidden">
+  <div class="wrap">
+    <header class="top">
+      <div class="brand serif">Falah</div>
+      <button class="chip" id="hdrLoc" aria-label="Change location"><span id="hdrLocText">—</span> ▾</button>
+    </header>
+    <div id="status" class="msg" role="status"></div>
+    <div id="offlineNote" class="offline hidden" role="status"><i></i><span id="offlineText">Offline — using saved times</span></div>
+
+    <!-- PRAYER -->
+    <section id="page-prayer">
+      <div class="dates">
+        <div class="h serif" id="hijriDate"></div>
+        <div class="g" id="gregDate"></div>
+      </div>
+      <button class="strip hidden" id="ramadanStrip"><span id="stripLabel">Ramadan</span><b id="stripCount">--:--:--</b></button>
+      <div class="seg" role="group" aria-label="View">
+        <button id="viewToday" aria-pressed="true">Today</button>
+        <button id="viewMonth" aria-pressed="false">Month</button>
+      </div>
+
+      <div id="todayView">
+        <div class="card hero">
+          <div class="eyebrow">Next prayer</div>
+          <div class="big serif" id="nextName">—</div>
+          <div class="at" id="nextTime"></div>
+          <div class="count" id="countdown">--:--:--</div>
+        </div>
+        <div class="card"><ul class="times" id="times"></ul></div>
+      </div>
+
+      <div id="monthView" class="card hidden">
+        <div class="month-head">
+          <button class="btn" id="prevMonth" aria-label="Previous month">‹</button>
+          <div class="month-title"><b class="serif" id="monthTitle"></b><div class="sub" id="monthSub"></div></div>
+          <button class="btn" id="nextMonth" aria-label="Next month">›</button>
+        </div>
+        <div class="tbl-wrap" id="tblWrap">
+          <table>
+            <thead><tr><th>Day</th><th>Fajr</th><th>Sun</th><th>Dhuhr</th><th>Asr</th><th>Magh</th><th>Isha</th></tr></thead>
+            <tbody id="monthBody"></tbody>
+          </table>
+        </div>
+        <div class="msg" id="monthMsg"></div>
+        <div class="hint">24-hour times, local to the selected city.</div>
+      </div>
+    </section>
+
+    <!-- FASTING -->
+    <section id="page-fasting" class="hidden">
+      <div class="dates">
+        <div class="h serif" id="fastHijri"></div>
+        <div class="g" id="fastGreg"></div>
+      </div>
+      <div class="card hero" id="fastHero">
+        <div id="ramadanBadge" class="badge hidden">Ramadan Mubarak</div>
+        <div class="eyebrow" id="fastLabel">—</div>
+        <div class="count" id="fastCount">--:--:--</div>
+        <div class="at" id="fastSub"></div>
+        <div class="progress" id="fastProgressWrap"><i id="fastProgress"></i></div>
+      </div>
+      <div class="pair">
+        <div class="card"><div class="eyebrow">Suhoor ends</div><div class="sub">Fajr</div><div class="time serif" id="suhoorTime">—</div></div>
+        <div class="card"><div class="eyebrow">Iftar</div><div class="sub">Maghrib</div><div class="time serif" id="iftarTime">—</div></div>
+      </div>
+      <div class="card sub" id="fastNote"></div>
+    </section>
+
+    <!-- QIBLA -->
+    <section id="page-qibla" class="hidden">
+      <div class="card">
+        <div class="eyebrow" style="text-align:center">Qibla direction</div>
+        <div class="qibla-deg serif" id="qiblaDeg">—</div>
+        <div class="sub" style="text-align:center;margin-bottom:18px" id="qiblaSub"></div>
+        <svg class="compass" id="compass" viewBox="0 0 260 260" role="img" aria-label="Qibla compass">
+          <polygon class="pointer" points="130,-2 122,14 138,14"/>
+          <g id="dial">
+            <circle class="ring" cx="130" cy="130" r="112"/>
+            <g id="ticks"></g>
+            <text class="north" x="130" y="42">N</text>
+            <text x="218" y="130">E</text>
+            <text x="130" y="218">S</text>
+            <text x="42" y="130">W</text>
+            <g id="qMark">
+              <line class="q" x1="130" y1="130" x2="130" y2="50"/>
+              <rect class="kaaba" x="121" y="32" width="18" height="18" rx="3"/>
+            </g>
+            <circle cx="130" cy="130" r="5" fill="var(--muted)"/>
+          </g>
+        </svg>
+        <div class="qibla-status" id="qiblaStatus"></div>
+        <button class="btn primary block" id="compassBtn">Enable live compass</button>
+        <div class="hint" id="compassHint" style="text-align:center">Hold your phone flat. Without a compass sensor, line up the bearing above with a physical compass.</div>
+      </div>
+    </section>
+
+    <!-- GARDEN -->
+    <section id="page-garden" class="hidden">
+      <div class="stats3">
+        <div class="card stat"><div class="eyebrow">Today</div><div class="v serif" id="stToday">0</div></div>
+        <div class="card stat"><div class="eyebrow">All time</div><div class="v serif" id="stTotal">0</div></div>
+        <div class="card stat"><div class="eyebrow">Streak</div><div class="v serif"><span id="stStreak">0</span> <small id="stStreakU" style="font-size:.7rem;font-weight:400;color:var(--muted)">days</small></div></div>
+      </div>
+      <div class="card garden-card">
+        <svg id="garden" class="garden" viewBox="0 0 360 200" role="img" aria-label="Your tasbeeh garden"></svg>
+        <div class="garden-cap"><b class="serif" id="gStage"></b><span class="sub" id="gNext"></span></div>
+        <div class="msg" id="gWilt" role="status"></div>
+      </div>
+      <div class="card">
+        <div class="pills" id="dhikrPills" role="group" aria-label="Choose dhikr"></div>
+        <div id="customEditor" class="stack hidden">
+          <input type="text" id="cuAr" dir="rtl" lang="ar" placeholder="Arabic (optional)" maxlength="120" aria-label="Arabic text">
+          <input type="text" id="cuTr" placeholder="Name or transliteration" maxlength="80" aria-label="Transliteration">
+          <input type="text" id="cuEn" placeholder="Meaning (optional)" maxlength="120" aria-label="Meaning">
+        </div>
+        <div class="dh">
+          <div class="ar" id="dhAr" lang="ar" dir="rtl"></div>
+          <div class="serif tr" id="dhTr"></div>
+          <div class="sub" id="dhEn"></div>
+        </div>
+        <button class="tap" id="tapBtn" aria-label="Count one tasbeeh">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="46"/><circle class="fill" id="ringFill" cx="50" cy="50" r="46"/></svg>
+          <span class="num serif" id="tapNum">0</span>
+          <span class="of" id="tapOf"></span>
+        </button>
+        <div class="tap-msg" id="tapMsg" role="status"></div>
+        <div class="sect-label">Target</div>
+        <div class="pills" id="targetPills" role="group" aria-label="Target"></div>
+        <input type="number" id="targetInput" class="hidden" min="1" max="100000" inputmode="numeric" placeholder="Custom target" aria-label="Custom target" style="margin-bottom:10px">
+        <button class="btn block" id="resetRound">Reset this round</button>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="page-settings" class="hidden">
+      <div class="card">
+        <h2 class="serif">Location</h2>
+        <p class="sub" style="margin:0 0 14px">Current: <b id="curLoc">—</b></p>
+        <div id="settingsPanel"></div>
+      </div>
+      <div class="card">
+        <h2 class="serif" style="margin-bottom:14px">Prayer calculation</h2>
+        <div class="field">
+          <label for="methodSel">Calculation method</label>
+          <select id="methodSel"></select>
+          <div class="hint">Sets the Fajr and Isha angles. "Automatic" lets Aladhan pick a method for your region.</div>
+        </div>
+        <div class="field">
+          <label for="schoolSel">Asr method</label>
+          <select id="schoolSel">
+            <option value="0">Standard (Shafi'i, Maliki, Hanbali)</option>
+            <option value="1">Hanafi</option>
+          </select>
+          <div class="hint">Hanafi calculates Asr later, when a shadow is twice the object's length.</div>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="serif" style="margin-bottom:14px">Appearance</h2>
+        <div class="field">
+          <label for="themeSel">Theme</label>
+          <select id="themeSel">
+            <option value="system">Match my device</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="serif" style="margin-bottom:14px">Tasbeeh</h2>
+        <div class="field">
+          <label for="vibrateSel">Vibration</label>
+          <select id="vibrateSel">
+            <option value="on">On — gentle tap, stronger at your target</option>
+            <option value="off">Off</option>
+          </select>
+          <div class="hint">Not every device supports vibration (iPhones don't in the browser).</div>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="serif" style="margin-bottom:10px">Offline &amp; install</h2>
+        <p class="sub" style="margin:0 0 6px" id="offTimes"></p>
+        <p class="sub" style="margin:0 0 12px" id="offApp"></p>
+        <button class="btn primary block hidden" id="installBtn">Install Falah on this device</button>
+        <div class="hint">Or use your browser's menu: "Install app" (Chrome, Edge) or Share → "Add to Home Screen" (Safari).</div>
+      </div>
+      <footer>Times from <a href="https://aladhan.com" target="_blank" rel="noopener">Aladhan</a> · Places by <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></footer>
+    </section>
+  </div>
+
+  <nav aria-label="Main">
+    <div class="inner">
+      <button data-tab="prayer"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Prayer</button>
+      <button data-tab="fasting"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>Fasting<i class="dot hidden" id="navDot"></i></button>
+      <button data-tab="qibla"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>Qibla</button>
+      <button data-tab="garden"><svg viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12c0-4 3-6 7-6 0 4-2 7-7 6z"/><path d="M12 16c0-3-2-5-6-5 0 3 2 5.500 6 5z"/></svg>Garden</button>
+      <button data-tab="settings"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Settings</button>
+    </div>
+  </nav>
+</div>
+
+<template id="locTpl">
+  <button class="btn primary block geoBtn">Use my current location</button>
+  <div class="or">or search by city</div>
+  <form class="row searchForm">
+    <input class="cityInput" type="text" placeholder="e.g. London, UK" autocomplete="off" aria-label="City name">
+    <button class="btn" type="submit">Search</button>
+  </form>
+  <div class="msg" role="status"></div>
+</template>
+
+<script>
+(() => {
+  "use strict";
+
+  const API = "https://api.aladhan.com/v1";
+  const LOC_KEY = "falah.location";
+  const SETTINGS_KEY = "falah.settings";
+  const KAABA = { lat: 21.4225, lon: 39.8262 };
+  const ROWS = [
+    { key: "Fajr",    label: "Fajr",    prayer: true },
+    { key: "Sunrise", label: "Sunrise", prayer: false },
+    { key: "Dhuhr",   label: "Dhuhr",   prayer: true },
+    { key: "Asr",     label: "Asr",     prayer: true },
+    { key: "Maghrib", label: "Maghrib", prayer: true },
+    { key: "Isha",    label: "Isha",    prayer: true },
+  ];
+  const METHODS = [
+    ["auto", "Automatic (based on location)"],
+    [3, "Muslim World League"],
+    [2, "Islamic Society of North America (ISNA)"],
+    [15, "Moonsighting Committee Worldwide"],
+    [4, "Umm al-Qura University, Makkah"],
+    [5, "Egyptian General Authority of Survey"],
+    [1, "University of Islamic Sciences, Karachi"],
+    [0, "Shia Ithna-Ashari, Jafari"],
+    [7, "Institute of Geophysics, University of Tehran"],
+    [8, "Gulf Region"],
+    [9, "Kuwait"],
+    [10, "Qatar"],
+    [23, "Jordan (Ministry of Awqaf)"],
+    [16, "Dubai (experimental)"],
+    [13, "Diyanet, Turkey"],
+    [12, "Union des Organisations Islamiques de France"],
+    [14, "Spiritual Administration of Muslims of Russia"],
+    [22, "Lisbon Islamic Community, Portugal"],
+    [18, "Tunisia"],
+    [19, "Algeria"],
+    [21, "Morocco"],
+    [17, "JAKIM, Malaysia"],
+    [11, "Majlis Ugama Islam Singapura"],
+    [20, "KEMENAG, Indonesia"],
+  ];
+
+  const $ = id => document.getElementById(id);
+  const pad = n => String(n).padStart(2, "0");
+
+  /* ---------- settings ---------- */
+  const settings = { method: "auto", school: "0", theme: "system", vibrate: true };
+  try {
+    const v = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+    if (v) {
+      if (METHODS.some(m => String(m[0]) === String(v.method))) settings.method = String(v.method);
+      if (v.school === "1" || v.school === 1) settings.school = "1";
+      if (v.theme === "light" || v.theme === "dark") settings.theme = v.theme;
+      if (v.vibrate === false) settings.vibrate = false;
+    }
+  } catch (e) {}
+  const saveSettings = () => { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) {} };
+  function settingsQuery() {
+    let q = `&school=${settings.school}`;
+    if (settings.method !== "auto") q += `&method=${settings.method}`;
+    return q;
+  }
+  function applyTheme() {
+    if (settings.theme === "system") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.dataset.theme = settings.theme;
+  }
+  applyTheme();
+
+  function loadLoc() {
+    try {
+      const v = JSON.parse(localStorage.getItem(LOC_KEY));
+      if (v && isFinite(v.lat) && isFinite(v.lon)) return v;
+    } catch (e) {}
+    return null;
+  }
+  const saveLoc = loc => { try { localStorage.setItem(LOC_KEY, JSON.stringify(loc)); } catch (e) {} };
+
+  /* ---------- state ---------- */
+  const state = {
+    loc: null, days: {}, hijri: {}, today: null, timer: null, retry: null,
+    tab: "prayer", tabChosen: false, view: "today", cal: null, usingSaved: false,
+    renderedNext: null, tomorrowLoading: false, rolling: false,
+  };
+
+  /* ---------- time helpers (always in the location's timezone) ---------- */
+  function partsIn(tz, date = new Date()) {
+    const f = new Intl.DateTimeFormat("en-CA", {
+      timeZone: tz, hourCycle: "h23",
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit",
+    });
+    const p = {};
+    for (const x of f.formatToParts(date)) p[x.type] = x.value;
+    return { key: `${p.year}-${p.month}-${p.day}`, y: +p.year, m: +p.month, d: +p.day,
+             secs: (+p.hour) * 3600 + (+p.minute) * 60 + (+p.second) };
+  }
+  const addDay = (p, n) => new Date(Date.UTC(p.y, p.m - 1, p.d + n)).toISOString().slice(0, 10);
+  const apiDate = key => key.split("-").reverse().join("-");
+  const toSecs = hhmm => { const [h, m] = hhmm.match(/\d+/g).map(Number); return h * 3600 + m * 60; };
+  const fmt12 = hhmm => { const [h, m] = hhmm.match(/\d+/g).map(Number); return `${h % 12 || 12}:${pad(m)} ${h < 12 ? "AM" : "PM"}`; };
+  const hms = s => `${pad(Math.floor(s / 3600))}:${pad(Math.floor(s % 3600 / 60))}:${pad(s % 60)}`;
+  function localDateKey() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+
+  /* ---------- API ---------- */
+  async function aladhan(url) {
+    const res = await fetch(url);
+    const json = await res.json().catch(() => null);
+    if (!res.ok || !json || json.code !== 200) throw new Error((json && (json.data || json.status)) || `Request failed (${res.status})`);
+    return json.data;
+  }
+  const isOffline = () => navigator.onLine === false;
+
+  /* ---------- offline cache ---------- */
+  // Months of prayer times saved in localStorage so Falah works with no connection.
+  // `k` records the place and calculation settings the times were made with; if it no longer
+  // matches the current settings, the saved times are out of date and are replaced when online.
+  const CACHE_KEY = "falah.cache";
+  let cache = { k: null, months: {} };
+  try {
+    const v = JSON.parse(localStorage.getItem(CACHE_KEY));
+    if (v && v.months && typeof v.months === "object") cache = { k: v.k || null, months: v.months };
+  } catch (e) {}
+  const currentCacheKey = () => `${state.loc.lat},${state.loc.lon},${settings.method},${settings.school}`;
+  const monthKey = (y, m) => `${y}-${pad(m)}`;
+
+  function persistCache() {
+    for (;;) {
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); return; }
+      catch (e) { // storage full or unavailable: drop the oldest month and retry
+        const oldest = Object.keys(cache.months).sort()[0];
+        if (!oldest) return;
+        delete cache.months[oldest];
+      }
+    }
+  }
+  // Keep only what the app uses, so two months stay small.
+  function trimRows(raw) {
+    return raw.map(d => ({
+      d: +d.date.gregorian.day, wd: d.date.gregorian.weekday.en,
+      h: { d: d.date.hijri.day, mn: +d.date.hijri.month.number, m: d.date.hijri.month.en, y: d.date.hijri.year },
+      t: Object.fromEntries(["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"].map(k => [k, d.timings[k].slice(0, 5)])),
+    }));
+  }
+  function storeMonth(key, rows, k) {
+    if (cache.k !== k) cache = { k, months: {} };
+    cache.months[key] = rows;
+    persistCache();
+    renderOfflineInfo();
+  }
+  const fetchMonthRaw = (lat, lon, y, m) =>
+    aladhan(`${API}/calendar/${y}/${m}?latitude=${lat}&longitude=${lon}${settingsQuery()}`);
+
+  const inflight = {};
+  // Saved copy if it's up to date; otherwise the network; and if the network fails, whatever
+  // is saved for this place (even if made with older settings) so the app keeps working.
+  async function getMonth(y, m) {
+    const key = monthKey(y, m), want = currentCacheKey();
+    const sameSpot = cache.k && cache.k.startsWith(`${state.loc.lat},${state.loc.lon},`);
+    const saved = sameSpot ? cache.months[key] : undefined;
+    if (saved && cache.k === want) return saved;
+    const id = key + "|" + want;
+    if (!inflight[id]) {
+      inflight[id] = (async () => {
+        if (!isOffline()) {
+          try {
+            const rows = trimRows(await fetchMonthRaw(state.loc.lat, state.loc.lon, y, m));
+            storeMonth(key, rows, want);
+            state.usingSaved = false;
+            updateNote();
+            return rows;
+          } catch (e) { if (!saved) throw e; }
+        }
+        if (saved) { state.usingSaved = true; updateNote(); return saved; }
+        throw new Error("you're offline and these times haven't been saved yet");
+      })().finally(() => { delete inflight[id]; });
+    }
+    return inflight[id];
+  }
+
+  // Fetch (or confirm saved) this month and next, and forget months older than last month.
+  async function prefetchMonths() {
+    if (!state.loc || isOffline()) return;
+    const n = partsIn(state.loc.tz);
+    const next = n.m === 12 ? [n.y + 1, 1] : [n.y, n.m + 1];
+    for (const [y, m] of [[n.y, n.m], next]) { try { await getMonth(y, m); } catch (e) {} }
+    const oldest = n.m === 1 ? monthKey(n.y - 1, 12) : monthKey(n.y, n.m - 1);
+    let changed = false;
+    for (const k of Object.keys(cache.months)) if (k < oldest) { delete cache.months[k]; changed = true; }
+    if (changed) { persistCache(); renderOfflineInfo(); }
+  }
+
+  function updateNote() {
+    const show = !!state.loc && (isOffline() || state.usingSaved);
+    $("offlineNote").classList.toggle("hidden", !show);
+    const stale = !!(state.loc && cache.k && cache.k !== currentCacheKey());
+    $("offlineText").textContent = "Offline — using saved times" + (stale ? " (new settings apply when you're back online)" : "");
+  }
+  function renderOfflineInfo() {
+    const months = Object.keys(cache.months).sort().map(k => {
+      const [y, m] = k.split("-");
+      return new Date(Date.UTC(+y, +m - 1, 1)).toLocaleDateString(undefined, { month: "short", year: "numeric", timeZone: "UTC" });
+    });
+    $("offTimes").textContent = months.length ? `Prayer times saved for ${months.join(" and ")}.` : "No prayer times saved yet.";
+    $("offApp").textContent = !("serviceWorker" in navigator) ? "This browser can't save the app for offline use."
+      : !/^https?:$/.test(location.protocol) ? "To open Falah without a connection, serve it over https (or localhost) rather than opening the file directly."
+      : navigator.serviceWorker.controller ? "App saved — Falah can open without a connection."
+      : "Saving the app for offline use… reload once to finish.";
+  }
+
+  async function reverseName(lat, lon) {
+    try {
+      const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+      const j = await r.json();
+      const place = j.city || j.locality || j.principalSubdivision;
+      if (place) return j.countryName ? `${place}, ${j.countryName}` : place;
+    } catch (e) {}
+    return null;
+  }
+
+  // Geocode with Open-Meteo (Aladhan's address endpoint returns unreliable coordinates).
+  // Accepts "City" or "City, Country/Region"; the part after the comma narrows the results.
+  async function geocode(query) {
+    const [city, ...rest] = query.split(",").map(x => x.trim());
+    const hint = rest.join(" ").toLowerCase();
+    const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=10&language=en&format=json`);
+    if (!r.ok) throw new Error(`Geocoder error (${r.status})`);
+    const results = (await r.json()).results || [];
+    const match = !hint ? results[0] : results.find(x =>
+      [x.country, x.country_code, x.admin1, x.admin2].some(f => f && (f.toLowerCase() === hint || f.toLowerCase().includes(hint))));
+    // The hint can miss on spelling ("Turkey" vs "Türkiye", "UK" vs "GB"); fall back to the top hit.
+    const pick = match || results[0];
+    if (!pick) throw new Error("no matching place");
+    return pick;
+  }
+
+  /* ---------- location UI ---------- */
+  const setMsg = (node, text, isError) => { node.textContent = text || ""; node.classList.toggle("error", !!isError); };
+
+  function mountLocationPanel(host) {
+    host.append($("locTpl").content.cloneNode(true));
+    const geo = host.querySelector(".geoBtn"), form = host.querySelector(".searchForm");
+    const input = host.querySelector(".cityInput"), msg = host.querySelector(".msg");
+    const ui = {
+      msg: (t, err) => setMsg(msg, t, err),
+      busy: b => { geo.disabled = form.querySelector("button").disabled = !!b; },
+      focus: () => input.focus(),
+    };
+    geo.addEventListener("click", () => useGeolocation(ui));
+    form.addEventListener("submit", e => { e.preventDefault(); const q = input.value.trim(); if (q) searchCity(q, ui); });
+    return ui;
+  }
+  const welcomeUI = mountLocationPanel($("welcomePanel"));
+  const settingsUI = mountLocationPanel($("settingsPanel"));
+
+  function useGeolocation(ui) {
+    if (!("geolocation" in navigator)) {
+      ui.msg("Geolocation isn't supported here — search for your city instead.", true);
+      return;
+    }
+    ui.busy(true);
+    ui.msg("Waiting for location permission…");
+    navigator.geolocation.getCurrentPosition(async pos => {
+      try {
+        if (isOffline()) throw new Error("you're offline");
+        const lat = +pos.coords.latitude.toFixed(4), lon = +pos.coords.longitude.toFixed(4);
+        ui.msg("Fetching prayer times…");
+        const now = new Date(), y = now.getFullYear(), m = now.getMonth() + 1;
+        const raw = await fetchMonthRaw(lat, lon, y, m);
+        const tz = raw[0].meta.timezone;
+        const name = (await reverseName(lat, lon)) || tz.split("/").pop().replace(/_/g, " ");
+        await commitLocation({ name, lat, lon, tz }, raw, y, m, ui);
+      } catch (e) {
+        ui.msg("Couldn't load prayer times: " + e.message + (isOffline() ? " Connect once to set up a new location." : ""), true);
+      } finally { ui.busy(false); }
+    }, err => {
+      ui.busy(false);
+      const why = err.code === 1 ? "Location permission was denied."
+                : err.code === 3 ? "Getting your location timed out."
+                : "Couldn't determine your location.";
+      ui.msg(why + " Search for your city below instead.", true);
+      ui.focus();
+    }, { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 });
+  }
+
+  async function searchCity(query, ui) {
+    if (isOffline()) {
+      ui.msg("You're offline — searching for a new city needs a connection. Your saved location still works.", true);
+      return;
+    }
+    ui.busy(true);
+    ui.msg("Searching…");
+    try {
+      const g = await geocode(query);
+      const lat = +g.latitude.toFixed(4), lon = +g.longitude.toFixed(4);
+      const now = new Date(), y = now.getFullYear(), m = now.getMonth() + 1;
+      const raw = await fetchMonthRaw(lat, lon, y, m);
+      const name = g.country ? `${g.name}, ${g.country}` : g.name;
+      await commitLocation({ name, lat, lon, tz: raw[0].meta.timezone }, raw, y, m, ui);
+    } catch (e) {
+      ui.msg(`Couldn't find "${query}". Try "City, Country". (${e.message})`, true);
+    } finally { ui.busy(false); }
+  }
+
+  // `raw` is the month already fetched for this place, saved so it isn't requested twice.
+  async function commitLocation(loc, raw, y, m, ui) {
+    state.loc = loc;
+    saveLoc(loc);
+    state.days = {}; state.hijri = {}; state.cal = null; state.usingSaved = false;
+    storeMonth(monthKey(y, m), trimRows(raw), currentCacheKey());
+    ui.msg("");
+    state.tabChosen = false;
+    await start();
+  }
+
+  /* ---------- data loading ---------- */
+  async function ensureDay(key) {
+    if (state.days[key]) return state.days[key];
+    const [y, m, d] = key.split("-").map(Number);
+    const rows = await getMonth(y, m);
+    const row = rows.find(r => r.d === d);
+    if (!row) throw new Error("no times for " + key);
+    state.days[key] = row.t;
+    state.hijri[key] = { day: row.h.d, month: { number: row.h.mn, en: row.h.m }, year: row.h.y };
+    return row.t;
+  }
+  // Returns tomorrow's timings if loaded; otherwise starts loading them and returns null.
+  function getTomorrow(now) {
+    const key = addDay(now, 1);
+    if (state.days[key]) return state.days[key];
+    if (!state.tomorrowLoading) {
+      state.tomorrowLoading = true;
+      ensureDay(key).catch(() => {}).finally(() => { state.tomorrowLoading = false; });
+    }
+    return null;
+  }
+  const isRamadan = () => { const h = state.hijri[state.today]; return !!h && +h.month.number === 9; };
+
+  async function start() {
+    clearInterval(state.timer);
+    clearTimeout(state.retry);
+    $("welcome").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    $("hdrLocText").textContent = $("curLoc").textContent = state.loc.name;
+    setMsg($("status"), "Loading prayer times…");
+    try {
+      const now = partsIn(state.loc.tz);
+      state.today = now.key;
+      await ensureDay(now.key);
+      setMsg($("status"), "");
+    } catch (e) {
+      showLoadError(e);
+      updateNote();
+      showTab(state.tab);
+      return;
+    }
+    updateNote();
+    prefetchMonths(); // top up this month and next in the background
+    renderList();
+    renderDates();
+    $("navDot").classList.toggle("hidden", !isRamadan());
+    // In Ramadan, Fasting is the main focus until the user picks a tab themselves.
+    showTab(state.tabChosen ? state.tab : (isRamadan() ? "fasting" : "prayer"));
+    tick();
+    state.timer = setInterval(tick, 1000);
+  }
+
+  function showLoadError(e) {
+    setMsg($("status"), "Couldn't load prayer times: " + e.message + " — retrying in 30s.", true);
+    clearTimeout(state.retry);
+    state.retry = setTimeout(start, 30000);
+  }
+
+  /* ---------- rendering: prayer ---------- */
+  function nextPrayer(now, t) {
+    for (const r of ROWS) {
+      if (!r.prayer) continue;
+      const s = toSecs(t[r.key]);
+      if (s > now.secs) return { row: r, secs: s, tomorrow: false };
+    }
+    return { row: ROWS[0], secs: null, tomorrow: true };
+  }
+
+  function renderList() {
+    const t = state.days[state.today];
+    if (!t) return;
+    const now = partsIn(state.loc.tz);
+    const next = nextPrayer(now, t);
+    const list = $("times");
+    list.textContent = "";
+    for (const r of ROWS) {
+      const li = document.createElement("li");
+      const n = document.createElement("span"); n.className = "n"; n.textContent = r.label;
+      const tm = document.createElement("span"); tm.className = "t"; tm.textContent = fmt12(t[r.key]);
+      li.append(n, tm);
+      if (!r.prayer) li.classList.add("sunrise");
+      if (!next.tomorrow && next.row.key === r.key) li.classList.add("next");
+      else if (toSecs(t[r.key]) <= now.secs) li.classList.add("passed");
+      list.append(li);
+    }
+    state.renderedNext = next.tomorrow ? "tomorrow" : next.row.key;
+  }
+
+  function renderDates() {
+    const now = partsIn(state.loc.tz);
+    const greg = new Date(Date.UTC(now.y, now.m - 1, now.d)).toLocaleDateString(undefined,
+      { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+    const h = state.hijri[state.today];
+    const hijri = h ? `${h.day} ${h.month.en} ${h.year} AH` : "";
+    $("gregDate").textContent = $("fastGreg").textContent = greg;
+    $("hijriDate").textContent = $("fastHijri").textContent = hijri;
+  }
+
+  function updatePrayer(now, t) {
+    const next = nextPrayer(now, t);
+    let remaining, timeText;
+    if (next.tomorrow) {
+      const tm = getTomorrow(now);
+      if (!tm) {
+        $("nextName").textContent = "Fajr"; $("nextTime").textContent = "Tomorrow"; $("countdown").textContent = "--:--:--";
+        return;
+      }
+      remaining = 86400 - now.secs + toSecs(tm.Fajr);
+      timeText = `Tomorrow, ${fmt12(tm.Fajr)}`;
+    } else {
+      remaining = next.secs - now.secs;
+      timeText = fmt12(t[next.row.key]);
+    }
+    $("nextName").textContent = next.row.label;
+    $("nextTime").textContent = timeText;
+    $("countdown").textContent = hms(remaining);
+    const cur = next.tomorrow ? "tomorrow" : next.row.key;
+    if (cur !== state.renderedNext) renderList();
+  }
+
+  /* ---------- rendering: fasting ---------- */
+  function updateFasting(now, t) {
+    const fajr = toSecs(t.Fajr), mag = toSecs(t.Maghrib);
+    $("suhoorTime").textContent = fmt12(t.Fajr);
+    $("iftarTime").textContent = fmt12(t.Maghrib);
+
+    let label, remaining = null, sub = "", progress = null;
+    if (now.secs >= fajr && now.secs < mag) {
+      label = "Iftar in"; remaining = mag - now.secs;
+      sub = `Maghrib at ${fmt12(t.Maghrib)}`;
+      progress = (now.secs - fajr) / (mag - fajr);
+    } else if (now.secs < fajr) {
+      label = "Suhoor ends in"; remaining = fajr - now.secs;
+      sub = `Fajr at ${fmt12(t.Fajr)}`;
+    } else {
+      label = "Suhoor ends in";
+      const tm = getTomorrow(now);
+      if (tm) { remaining = 86400 - now.secs + toSecs(tm.Fajr); sub = `Fajr tomorrow at ${fmt12(tm.Fajr)}`; }
+    }
+    $("fastLabel").textContent = label;
+    $("fastCount").textContent = remaining == null ? "--:--:--" : hms(remaining);
+    $("fastSub").textContent = sub;
+    $("fastProgressWrap").classList.toggle("hidden", progress == null);
+    if (progress != null) $("fastProgress").style.width = (progress * 100).toFixed(1) + "%";
+
+    const ram = isRamadan();
+    $("fastHero").classList.toggle("gold", ram);
+    $("ramadanBadge").classList.toggle("hidden", !ram);
+    const h = state.hijri[state.today];
+    const len = mag - fajr;
+    const lenText = `${Math.floor(len / 3600)}h ${Math.floor(len % 3600 / 60)}m`;
+    $("fastNote").textContent = ram
+      ? `Ramadan day ${h.day}. Today's fast is ${lenText}, from Fajr to Maghrib.`
+      : `It isn't Ramadan right now. These times also work for voluntary fasts (Mondays, Thursdays, the White Days). Today's fast would be ${lenText}.`;
+
+    // Ramadan strip on the Prayer page
+    $("ramadanStrip").classList.toggle("hidden", !ram);
+    if (ram) {
+      $("stripLabel").textContent = label;
+      $("stripCount").textContent = remaining == null ? "--:--:--" : hms(remaining);
+    }
+  }
+
+  async function tick() {
+    if (!state.loc) return;
+    if (ts.shownDay !== localDateKey()) { renderTasbeeh(); renderGarden(); }
+    const now = partsIn(state.loc.tz);
+    if (now.key !== state.today) {
+      if (state.rolling) return;
+      state.rolling = true;
+      try {
+        if (!state.days[now.key]) await ensureDay(now.key);
+        state.today = now.key;
+        renderList(); renderDates();
+        $("navDot").classList.toggle("hidden", !isRamadan());
+        if (state.view === "month" && state.tab === "prayer") loadMonth();
+        prefetchMonths();
+      } catch (e) { showLoadError(e); }
+      finally { state.rolling = false; }
+      return;
+    }
+    const t = state.days[state.today];
+    if (!t) return;
+    updatePrayer(now, t);
+    updateFasting(now, t);
+  }
+
+  /* ---------- month timetable ---------- */
+  async function loadMonth() {
+    if (!state.loc) return;
+    if (!state.cal) { const n = partsIn(state.loc.tz); state.cal = { y: n.y, m: n.m }; }
+    const { y, m } = state.cal, key = `${y}-${m}`;
+    const isCurrent = () => state.cal && `${state.cal.y}-${state.cal.m}` === key;
+    $("monthTitle").textContent = new Date(Date.UTC(y, m - 1, 1))
+      .toLocaleDateString(undefined, { month: "long", year: "numeric", timeZone: "UTC" });
+    $("monthSub").textContent = "";
+    setMsg($("monthMsg"), "");
+    try {
+      const savedNow = cache.months[monthKey(y, m)] && cache.k === currentCacheKey();
+      if (!savedNow) { $("monthBody").textContent = ""; setMsg($("monthMsg"), "Loading…"); }
+      const rows = await getMonth(y, m);
+      if (!isCurrent()) return; // user moved on
+      setMsg($("monthMsg"), "");
+      renderMonth(rows, y, m);
+    } catch (e) {
+      if (isCurrent()) setMsg($("monthMsg"), "Couldn't load this month: " + e.message, true);
+    }
+  }
+
+  function renderMonth(rows, y, m) {
+    const now = partsIn(state.loc.tz);
+    const body = $("monthBody");
+    body.textContent = "";
+    const hFirst = rows[0].h, hLast = rows[rows.length - 1].h;
+    $("monthSub").textContent = hFirst.mn === hLast.mn
+      ? `${hFirst.m} ${hFirst.y} AH`
+      : `${hFirst.m} – ${hLast.m} ${hLast.y} AH`;
+    let todayRow = null;
+    for (const d of rows) {
+      const tr = document.createElement("tr");
+      const dayNum = d.d;
+      const c0 = document.createElement("td");
+      c0.textContent = `${d.wd.slice(0, 3)} ${dayNum}`;
+      const small = document.createElement("small");
+      small.textContent = `${d.h.d} ${d.h.m}`;
+      c0.append(small);
+      tr.append(c0);
+      for (const k of ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]) {
+        const td = document.createElement("td");
+        td.textContent = d.t[k];
+        tr.append(td);
+      }
+      if (d.wd === "Friday") tr.classList.add("fri");
+      if (y === now.y && m === now.m && dayNum === now.d) { tr.classList.add("today"); todayRow = tr; }
+      body.append(tr);
+    }
+    const wrap = $("tblWrap");
+    wrap.scrollTop = 0;
+    if (todayRow) {
+      const top = todayRow.getBoundingClientRect().top - wrap.getBoundingClientRect().top + wrap.scrollTop;
+      wrap.scrollTop = Math.max(0, top - wrap.clientHeight / 2 + 20);
+    }
+  }
+
+  function setView(v) {
+    state.view = v;
+    $("viewToday").setAttribute("aria-pressed", v === "today");
+    $("viewMonth").setAttribute("aria-pressed", v === "month");
+    $("todayView").classList.toggle("hidden", v !== "today");
+    $("monthView").classList.toggle("hidden", v !== "month");
+    if (v === "month") {
+      const n = partsIn(state.loc.tz);
+      state.cal = { y: n.y, m: n.m };
+      loadMonth();
+    }
+  }
+  function stepMonth(delta) {
+    let { y, m } = state.cal; m += delta;
+    if (m < 1) { m = 12; y--; } else if (m > 12) { m = 1; y++; }
+    state.cal = { y, m };
+    loadMonth();
+  }
+
+  /* ---------- qibla ---------- */
+  const rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
+  function qiblaBearing(lat, lon) {
+    const p1 = rad(lat), p2 = rad(KAABA.lat), dl = rad(KAABA.lon - lon);
+    const y = Math.sin(dl) * Math.cos(p2);
+    const x = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl);
+    return (deg(Math.atan2(y, x)) + 360) % 360;
+  }
+  function distanceKm(lat, lon) {
+    const dp = rad(KAABA.lat - lat), dl = rad(KAABA.lon - lon);
+    const a = Math.sin(dp / 2) ** 2 + Math.cos(rad(lat)) * Math.cos(rad(KAABA.lat)) * Math.sin(dl / 2) ** 2;
+    return 6371 * 2 * Math.asin(Math.sqrt(a));
+  }
+  const CARDINALS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+  const compass = { heading: null, on: false, listening: false };
+
+  (function buildTicks() {
+    let s = "";
+    for (let a = 0; a < 360; a += 15) {
+      if (a % 90 === 0) continue;
+      const len = a % 45 === 0 ? 12 : 6;
+      s += `<line class="tick" x1="130" y1="22" x2="130" y2="${22 + len}" transform="rotate(${a} 130 130)"/>`;
+    }
+    $("ticks").innerHTML = s;
+  })();
+
+  function renderQibla() {
+    if (!state.loc) return;
+    const b = qiblaBearing(state.loc.lat, state.loc.lon);
+    $("qiblaDeg").textContent = `${Math.round(b)}° ${CARDINALS[Math.round(b / 45) % 8]}`;
+    $("qiblaSub").textContent = `${Math.round(distanceKm(state.loc.lat, state.loc.lon)).toLocaleString()} km to the Kaaba from ${state.loc.name}`;
+    $("qMark").setAttribute("transform", `rotate(${b} 130 130)`);
+    const h = compass.heading;
+    $("dial").setAttribute("transform", `rotate(${h == null ? 0 : -h} 130 130)`);
+    const status = $("qiblaStatus");
+    if (h == null) {
+      status.textContent = compass.on ? "Looking for compass…" : "";
+      status.className = "qibla-status";
+      $("compass").classList.remove("aligned");
+      return;
+    }
+    const diff = ((b - h + 540) % 360) - 180;
+    const aligned = Math.abs(diff) <= 4;
+    $("compass").classList.toggle("aligned", aligned);
+    status.className = "qibla-status" + (aligned ? " ok" : "");
+    status.textContent = aligned ? "You're facing the Qibla" : `Turn ${Math.round(Math.abs(diff))}° ${diff > 0 ? "right" : "left"}`;
+  }
+
+  function onOrientation(e) {
+    let h = null;
+    if (typeof e.webkitCompassHeading === "number") h = e.webkitCompassHeading;       // iOS
+    else if (e.absolute && e.alpha != null) h = (360 - e.alpha) % 360;                // Android (absolute)
+    if (h != null) { compass.heading = h; renderQibla(); }
+  }
+  function listenCompass(on) {
+    if (on === compass.listening) return;
+    compass.listening = on;
+    const fn = on ? "addEventListener" : "removeEventListener";
+    window[fn]("deviceorientationabsolute", onOrientation);
+    window[fn]("deviceorientation", onOrientation);
+  }
+  async function enableCompass() {
+    if (!("DeviceOrientationEvent" in window)) {
+      $("compassHint").textContent = "This device has no compass sensor. Use the bearing above with a physical compass.";
+      return;
+    }
+    try {
+      if (typeof DeviceOrientationEvent.requestPermission === "function") {
+        const r = await DeviceOrientationEvent.requestPermission();
+        if (r !== "granted") { $("compassHint").textContent = "Compass permission was denied."; return; }
+      }
+    } catch (e) { $("compassHint").textContent = "Couldn't access the compass."; return; }
+    compass.on = true;
+    $("compassBtn").classList.add("hidden");
+    listenCompass(true);
+    renderQibla();
+    setTimeout(() => {
+      if (compass.heading == null) {
+        $("compassHint").textContent = "No compass readings received — this device may not have a sensor. Use the bearing above with a physical compass.";
+        $("qiblaStatus").textContent = "";
+      }
+    }, 2500);
+  }
+
+  /* ---------- tasbeeh garden ---------- */
+  const TS_KEY = "falah.tasbeeh";
+  const DHIKR = [
+    { id: "subhanallah", short: "SubhanAllah", ar: "سُبْحَانَ ٱللَّٰهِ", tr: "SubhanAllah", en: "Glory be to Allah" },
+    { id: "alhamdulillah", short: "Alhamdulillah", ar: "ٱلْحَمْدُ لِلَّٰهِ", tr: "Alhamdulillah", en: "All praise is due to Allah" },
+    { id: "allahuakbar", short: "Allahu Akbar", ar: "ٱللَّٰهُ أَكْبَرُ", tr: "Allahu Akbar", en: "Allah is the Greatest" },
+    { id: "lailaha", short: "La ilaha illallah", ar: "لَا إِلَٰهَ إِلَّا ٱللَّٰهُ", tr: "La ilaha illallah", en: "There is no god but Allah" },
+    { id: "astaghfirullah", short: "Astaghfirullah", ar: "أَسْتَغْفِرُ ٱللَّٰهَ", tr: "Astaghfirullah", en: "I seek forgiveness from Allah" },
+    { id: "salawat", short: "Salawat", ar: "ٱللَّٰهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ", tr: "Allahumma salli ala Muhammad", en: "O Allah, send blessings upon Muhammad" },
+    { id: "custom", short: "Custom" },
+  ];
+  const PRESET_TARGETS = [33, 99, 100];
+  const ts = {
+    total: 0, days: {}, dhikr: "subhanallah", target: 33, customTarget: false, session: 0,
+    custom: { ar: "", tr: "", en: "" }, shownDay: null,
+  };
+  try {
+    const v = JSON.parse(localStorage.getItem(TS_KEY));
+    if (v) {
+      ts.total = Math.max(0, Math.floor(+v.total) || 0);
+      if (v.days && typeof v.days === "object") ts.days = v.days;
+      if (DHIKR.some(d => d.id === v.dhikr)) ts.dhikr = v.dhikr;
+      ts.target = Math.min(100000, Math.max(1, Math.floor(+v.target) || 33));
+      ts.customTarget = !PRESET_TARGETS.includes(ts.target);
+      ts.session = Math.min(ts.target, Math.max(0, Math.floor(+v.session) || 0));
+      if (v.custom) for (const k of ["ar", "tr", "en"]) ts.custom[k] = String(v.custom[k] || "").slice(0, 200);
+    }
+  } catch (e) {}
+  function saveTs() {
+    try {
+      localStorage.setItem(TS_KEY, JSON.stringify({
+        total: ts.total, days: ts.days, dhikr: ts.dhikr, target: ts.target, session: ts.session, custom: ts.custom,
+      }));
+    } catch (e) {}
+  }
+
+  // Dates here follow the device's calendar day, not the prayer location's timezone.
+  const shiftKey = (key, n) => { const [y, m, d] = key.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10); };
+  const daysBetween = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 864e5);
+
+  function streakCount() {
+    const today = localDateKey();
+    let k = ts.days[today] > 0 ? today : shiftKey(today, -1);
+    let n = 0;
+    while (ts.days[k] > 0) { n++; k = shiftKey(k, -1); }
+    return n;
+  }
+  // Wilt is 0 (healthy) to ~0.65. It starts after 3 fully missed days, and each tasbeeh today
+  // brings back a share of it, fully recovered after 33.
+  function wiltInfo() {
+    const today = localDateKey();
+    let last = null;
+    for (const k in ts.days) if (ts.days[k] > 0 && k < today && (!last || k > last)) last = k;
+    if (!last) return { base: 0, eff: 0 };
+    const missed = daysBetween(last, today) - 1;
+    if (missed < 3) return { base: 0, eff: 0 };
+    const base = Math.min(0.65, (missed - 2) * 0.12);
+    const eff = base * (1 - Math.min(1, (ts.days[today] || 0) / 33));
+    return { base, eff };
+  }
+
+  /* garden artwork */
+  const KINDS = { grass: { sprout: 15, full: 40 }, flower: { sprout: 25, full: 80 }, bush: { sprout: 40, full: 120 }, tree: { sprout: 60, full: 200 } };
+  const PETALS = ["#f0a6b8", "#c4b0ea", "#f4d77e", "#f5b895", "#f4f0e8"];
+  const SLOTS = [
+    ["g", 28, 192, 1], ["g", 112, 196, 4], ["g", 250, 194, 8], ["g", 330, 190, 12], ["g", 70, 186, 18], ["g", 215, 198, 24], ["g", 300, 184, 30], ["g", 155, 198, 36],
+    ["f", 52, 180, 30], ["f", 125, 178, 45], ["f", 240, 180, 60], ["f", 335, 178, 80], ["f", 90, 186, 100],
+    ["f", 285, 184, 130], ["f", 16, 176, 160], ["f", 225, 186, 200], ["f", 150, 188, 240], ["f", 205, 190, 280],
+    ["b", 30, 166, 250], ["b", 318, 168, 320], ["b", 255, 166, 400],
+    ["t", 62, 152, 400], ["t", 288, 150, 520], ["t", 135, 150, 650],
+  ].map(([k, x, y, t], i) => ({ id: "s" + i, kind: { g: "grass", f: "flower", b: "bush", t: "tree" }[k], x, y, t, c: PETALS[i % PETALS.length] }));
+  const MILESTONES = [[0, "Bare soil"], [1, "Seeds in the soil"], [16, "First sprouts"], [60, "Soft green grass"], [110, "Wildflowers"],
+    [370, "Bushes"], [600, "Young trees"], [700, "Butterflies"], [1000, "Birdsong"], [1800, "A fountain garden"]];
+
+  const ART = {
+    seed: `<ellipse class="seed1" cx="0" cy="1" rx="7" ry="2.6"/><ellipse cx="0" cy="-1" rx="2.6" ry="1.7" fill="#d9b98a"/>`,
+    sprout: `<path class="sk" d="M0 0 Q1 -6 0 -12"/><path class="fl" d="M0 -11 Q-8 -13 -9 -7 Q-3 -6 0 -11z"/><path class="fl2" d="M0 -9 Q7 -12 9 -6 Q3 -5 0 -9z"/>`,
+    grass: `<path class="sk" d="M-6 0 Q-7 -9 -10 -14 M-2 0 Q-2 -12 -3 -19 M2 0 Q3 -11 5 -17"/><path class="sk2" d="M6 0 Q7 -8 11 -12 M-4 0 Q-5 -6 -7 -9"/>`,
+    bush: `<circle class="fl2" cx="-12" cy="-9" r="11"/><circle class="fl2" cx="12" cy="-9" r="11"/><circle class="fl" cx="0" cy="-15" r="13"/><circle cx="-6" cy="-13" r="1.8" fill="#f4c2cf"/><circle cx="7" cy="-18" r="1.8" fill="#f4c2cf"/><circle cx="12" cy="-8" r="1.8" fill="#f4c2cf"/>`,
+    tree: `<path class="trunk" d="M-3.5 0 L-2.5 -30 L2.5 -30 L3.5 0z"/><circle class="fl2" cx="-15" cy="-40" r="14"/><circle class="fl2" cx="15" cy="-40" r="14"/><circle class="fl" cx="0" cy="-52" r="19"/><circle class="fl" cx="0" cy="-37" r="14"/>`,
+  };
+  const flowerArt = c => `<path class="sk" d="M0 0 Q-2 -14 0 -26"/><path class="fl" d="M0 -10 Q-9 -14 -10 -8 Q-3 -6 0 -10z"/><g transform="translate(0 -29)">${
+    [0, 72, 144, 216, 288].map(a => `<ellipse cx="0" cy="-5" rx="3.6" ry="5.2" fill="${c}" transform="rotate(${a})"/>`).join("")}<circle r="2.7" fill="#f2cf6b"/></g>`;
+  const plantArt = (s, st) => st === 1 ? ART.seed : st === 2 ? ART.sprout : s.kind === "flower" ? flowerArt(s.c) : ART[s.kind];
+
+  const FOUNTAIN = `<g transform="translate(180 176)"><g id="gf-fountain" class="hidden"><g class="grow">
+    <ellipse class="stone" cx="0" cy="0" rx="31" ry="8"/><ellipse class="water" cx="0" cy="-2" rx="26" ry="6"/>
+    <ellipse class="ripple" cx="-10" cy="-2" rx="8" ry="2"/><ellipse class="ripple" style="animation-delay:-1.6s" cx="12" cy="-2" rx="8" ry="2"/>
+    <path class="stone" d="M-5 -2 L-3 -22 L3 -22 L5 -2z"/><ellipse class="stone" cx="0" cy="-24" rx="13" ry="3.6"/><ellipse class="water" cx="0" cy="-25" rx="10" ry="2.4"/>
+    <path class="jet" d="M0 -26 Q-14 -46 -24 -20"/><path class="jet" style="animation-delay:-.5s" d="M0 -26 Q14 -46 24 -20"/><path class="jet" style="animation-delay:-.9s" d="M0 -26 Q0 -46 0 -40"/>
+  </g></g></g>`;
+  const butterfly = (id, x, y, c, dur) => `<g id="gf-${id}" class="hidden" transform="translate(${x} ${y})"><g class="drift fadein" style="--dur:${dur}s"><g class="flap"><ellipse cx="-3.5" cy="-1" rx="3.6" ry="2.6" fill="${c}"/><ellipse cx="3.5" cy="-1" rx="3.6" ry="2.6" fill="${c}"/><rect x="-.5" y="-3" width="1" height="6" rx=".5" fill="var(--ink)"/></g></g></g>`;
+  const bird = (id, y, dur, del) => `<g id="gf-${id}" class="hidden" transform="translate(0 ${y})"><g class="fly" style="--dur:${dur}s;--del:${del}s"><g class="bob"><path class="bird" d="M0 0 Q4 -5 8 0 Q12 -5 16 0"/></g></g></g>`;
+  const FAUNA = [
+    { id: "bf1", t: 700, html: butterfly("bf1", 70, 122, "#f2b8c6", 16) },
+    { id: "bf2", t: 1100, html: butterfly("bf2", 250, 138, "#b9a6e8", 21) },
+    { id: "bf3", t: 1400, html: butterfly("bf3", 170, 120, "#f6d98a", 18) },
+    { id: "bd1", t: 1000, html: bird("bd1", 52, 46, 0) },
+    { id: "bd2", t: 1500, html: bird("bd2", 74, 60, -24) },
+    { id: "fountain", t: 1800, html: "" },
+  ];
+
+  const GARDEN_STATIC = `
+    <defs><linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sky1)"/><stop offset="1" style="stop-color:var(--sky2)"/></linearGradient></defs>
+    <rect width="360" height="200" fill="url(#gSky)"/>
+    <circle class="sun" cx="292" cy="38" r="15"/>
+    <g class="cloud c1"><ellipse cx="60" cy="40" rx="24" ry="7"/><ellipse cx="78" cy="35" rx="16" ry="7"/><ellipse cx="46" cy="36" rx="14" ry="6"/></g>
+    <g class="cloud c2"><ellipse cx="210" cy="26" rx="20" ry="6"/><ellipse cx="226" cy="22" rx="13" ry="5.5"/></g>
+    <path class="hill1" d="M0 118 Q60 92 130 112 T260 106 T360 114 V150 H0z"/>
+    <path class="hill2" d="M0 132 Q80 112 170 128 T360 124 V150 H0z"/>
+    <path class="soil" d="M0 140 Q90 130 180 137 T360 134 V200 H0z"/>
+    <path class="furrow" d="M10 158 Q50 154 90 158 M130 172 Q180 168 230 172 M260 150 Q300 147 340 150 M30 188 Q80 185 120 188 M240 190 Q290 187 340 190"/>
+    <path class="lawn" id="gLawn" d="M0 140 Q90 130 180 137 T360 134 V200 H0z"/>`;
+
+  const G = { built: false, stages: {}, intro: true };
+  function buildGarden() {
+    const items = SLOTS.map(s => ({ y: s.y, html: `<g transform="translate(${s.x} ${s.y})"><g class="wilt" id="gs-${s.id}"></g></g>` }));
+    items.push({ y: 176, html: FOUNTAIN });
+    items.sort((a, b) => a.y - b.y);
+    $("garden").innerHTML = GARDEN_STATIC + `<g class="plants">${items.map(i => i.html).join("")}</g><g>${FAUNA.map(f => f.html).join("")}</g>`;
+    G.built = true;
+  }
+
+  function renderGarden() {
+    if (!G.built || state.tab !== "garden") return;
+    const total = ts.total;
+    const stagger = G.intro; // first time the garden is shown: let everything grow in gently
+    G.intro = false;
+    SLOTS.forEach((s, i) => {
+      const k = KINDS[s.kind];
+      const st = total >= s.t + k.full ? 3 : total >= s.t + k.sprout ? 2 : total >= s.t ? 1 : 0;
+      if (G.stages[s.id] === st) return;
+      G.stages[s.id] = st;
+      $("gs-" + s.id).innerHTML = st === 0 ? "" :
+        `<g class="grow" style="--d:${stagger ? Math.min(2.5, i * 0.1).toFixed(2) : 0}s"><g class="sway" style="--sd:-${i % 6}s">${plantArt(s, st)}</g></g>`;
+    });
+    for (const f of FAUNA) $("gf-" + f.id).classList.toggle("hidden", total < f.t);
+    $("gLawn").style.opacity = Math.min(0.9, (total / 120) * 0.9).toFixed(2);
+
+    const w = wiltInfo();
+    $("garden").style.setProperty("--wilt", w.eff.toFixed(3));
+    let cur = MILESTONES[0], next = null;
+    for (const m of MILESTONES) { if (m[0] <= total) cur = m; else { next = m; break; } }
+    $("gStage").textContent = cur[1];
+    $("gNext").textContent = next ? `${(next[0] - total).toLocaleString()} more until “${next[1]}”` : "Your garden is in full bloom";
+    const todayN = ts.days[localDateKey()] || 0;
+    $("gWilt").textContent = w.base > 0 && todayN === 0 ? "Your garden has been resting while you were away. A few tasbeeh will help it bloom again."
+      : w.base > 0 && w.eff > 0.01 ? "Welcome back — your garden is slowly recovering." : "";
+  }
+
+  /* counter */
+  function currentDhikr() {
+    const d = DHIKR.find(x => x.id === ts.dhikr);
+    return d.id !== "custom" ? d : { ar: ts.custom.ar, tr: ts.custom.tr || "Your dhikr", en: ts.custom.en };
+  }
+  function renderTasbeeh() {
+    const today = localDateKey();
+    ts.shownDay = today;
+    const todayN = ts.days[today] || 0, streak = streakCount();
+    $("stToday").textContent = todayN.toLocaleString();
+    $("stTotal").textContent = ts.total.toLocaleString();
+    $("stStreak").textContent = streak;
+    $("stStreakU").textContent = streak === 1 ? "day" : "days";
+    const d = currentDhikr();
+    $("dhAr").textContent = d.ar || "";
+    $("dhAr").classList.toggle("hidden", !d.ar);
+    $("dhTr").textContent = d.tr;
+    $("dhEn").textContent = d.en || "";
+    document.querySelectorAll("#dhikrPills .pill").forEach(b => b.setAttribute("aria-pressed", b.dataset.id === ts.dhikr));
+    $("customEditor").classList.toggle("hidden", ts.dhikr !== "custom");
+    document.querySelectorAll("#targetPills .pill").forEach(b =>
+      b.setAttribute("aria-pressed", b.dataset.id === "custom" ? ts.customTarget : (!ts.customTarget && +b.dataset.id === ts.target)));
+    $("targetInput").classList.toggle("hidden", !ts.customTarget);
+    $("tapNum").textContent = ts.session;
+    $("tapOf").textContent = "of " + ts.target;
+    $("ringFill").style.strokeDashoffset = (289.03 * (1 - Math.min(1, ts.session / ts.target))).toFixed(2);
+    $("tapMsg").textContent = ts.session >= ts.target ? "Target reached — Masha’Allah. Tap to begin again." : "";
+  }
+  function vibrate(pattern) {
+    if (settings.vibrate && navigator.vibrate) { try { navigator.vibrate(pattern); } catch (e) {} }
+  }
+  function tapCount() {
+    if (ts.session >= ts.target) ts.session = 0; // a finished round starts over
+    ts.session++; ts.total++;
+    const today = localDateKey();
+    ts.days[today] = (ts.days[today] || 0) + 1;
+    saveTs();
+    vibrate(ts.session >= ts.target ? [70, 60, 170] : 12);
+    renderTasbeeh();
+    renderGarden();
+  }
+  function initTasbeeh() {
+    buildGarden();
+    for (const d of DHIKR) {
+      const b = document.createElement("button");
+      b.className = "pill"; b.dataset.id = d.id; b.textContent = d.short;
+      b.addEventListener("click", () => {
+        if (ts.dhikr === d.id) return;
+        ts.dhikr = d.id; ts.session = 0; saveTs(); renderTasbeeh();
+        if (d.id === "custom") $("cuTr").focus();
+      });
+      $("dhikrPills").append(b);
+    }
+    for (const t of [...PRESET_TARGETS, "custom"]) {
+      const b = document.createElement("button");
+      b.className = "pill"; b.dataset.id = t; b.textContent = t === "custom" ? "Custom" : t;
+      b.addEventListener("click", () => {
+        if (t === "custom") { ts.customTarget = true; $("targetInput").value = ts.target; }
+        else { ts.customTarget = false; ts.target = t; }
+        if (ts.session > ts.target) ts.session = 0;
+        saveTs(); renderTasbeeh();
+        if (t === "custom") $("targetInput").focus();
+      });
+      $("targetPills").append(b);
+    }
+    $("targetInput").value = ts.target;
+    $("targetInput").addEventListener("input", e => {
+      const n = Math.floor(+e.target.value);
+      if (n >= 1 && n <= 100000) { ts.target = n; if (ts.session > n) ts.session = 0; saveTs(); renderTasbeeh(); }
+    });
+    for (const [id, k] of [["cuAr", "ar"], ["cuTr", "tr"], ["cuEn", "en"]]) {
+      $(id).value = ts.custom[k];
+      $(id).addEventListener("input", e => { ts.custom[k] = e.target.value; saveTs(); renderTasbeeh(); });
+    }
+    $("tapBtn").addEventListener("click", tapCount);
+    $("resetRound").addEventListener("click", () => { ts.session = 0; saveTs(); renderTasbeeh(); });
+    renderTasbeeh();
+  }
+
+  /* ---------- tabs ---------- */
+  const PAGES = ["prayer", "fasting", "qibla", "garden", "settings"];
+  function showTab(name) {
+    state.tab = name;
+    for (const p of PAGES) $("page-" + p).classList.toggle("hidden", p !== name);
+    document.querySelectorAll("nav button").forEach(b => {
+      if (b.dataset.tab === name) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+    });
+    listenCompass(name === "qibla" && compass.on);
+    if (name === "qibla") renderQibla();
+    if (name === "garden") renderGarden();
+    if (name === "prayer" && state.view === "month") loadMonth();
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- events ---------- */
+  document.querySelectorAll("nav button").forEach(b =>
+    b.addEventListener("click", () => { state.tabChosen = true; showTab(b.dataset.tab); }));
+  $("hdrLoc").addEventListener("click", () => { state.tabChosen = true; showTab("settings"); settingsUI.focus(); });
+  $("ramadanStrip").addEventListener("click", () => { state.tabChosen = true; showTab("fasting"); });
+  $("viewToday").addEventListener("click", () => setView("today"));
+  $("viewMonth").addEventListener("click", () => setView("month"));
+  $("prevMonth").addEventListener("click", () => stepMonth(-1));
+  $("nextMonth").addEventListener("click", () => stepMonth(1));
+  $("compassBtn").addEventListener("click", enableCompass);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) tick(); });
+
+  for (const [id, label] of METHODS) {
+    const o = document.createElement("option");
+    o.value = String(id); o.textContent = id === "auto" ? label : `${label} (${id})`;
+    $("methodSel").append(o);
+  }
+  $("methodSel").value = settings.method;
+  $("schoolSel").value = settings.school;
+  $("themeSel").value = settings.theme;
+  $("vibrateSel").value = settings.vibrate ? "on" : "off";
+  $("vibrateSel").addEventListener("change", () => { settings.vibrate = $("vibrateSel").value === "on"; saveSettings(); vibrate(12); });
+
+  function onCalcChange() {
+    settings.method = $("methodSel").value;
+    settings.school = $("schoolSel").value;
+    saveSettings();
+    // Times saved with the old settings are out of date: reload them now if we can. If we're
+    // offline, the old ones keep working (with a note) until the connection returns.
+    state.days = {}; state.hijri = {};
+    if (state.loc) start();
+  }
+  $("methodSel").addEventListener("change", onCalcChange);
+  $("schoolSel").addEventListener("change", onCalcChange);
+  $("themeSel").addEventListener("change", () => { settings.theme = $("themeSel").value; saveSettings(); applyTheme(); });
+
+  /* ---------- offline, install ---------- */
+  window.addEventListener("offline", updateNote);
+  window.addEventListener("online", () => {
+    state.usingSaved = false;
+    if (state.loc) { state.days = {}; state.hijri = {}; start(); } // refresh anything that was served from saved copies
+    updateNote();
+  });
+
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+    navigator.serviceWorker.addEventListener("controllerchange", renderOfflineInfo);
+    navigator.serviceWorker.ready.then(renderOfflineInfo).catch(() => {});
+  }
+
+  let installPrompt = null;
+  window.addEventListener("beforeinstallprompt", e => {
+    e.preventDefault();
+    installPrompt = e;
+    $("installBtn").classList.remove("hidden");
+  });
+  $("installBtn").addEventListener("click", async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    try { await installPrompt.userChoice; } catch (e) {}
+    installPrompt = null;
+    $("installBtn").classList.add("hidden");
+  });
+  window.addEventListener("appinstalled", () => $("installBtn").classList.add("hidden"));
+
+  /* ---------- boot ---------- */
+  renderOfflineInfo();
+  initTasbeeh();
+  const saved = loadLoc();
+  if (saved) {
+    state.loc = Object.assign({ name: "Saved location", tz: Intl.DateTimeFormat().resolvedOptions().timeZone }, saved);
+    start();
+  } else {
+    $("welcome").classList.remove("hidden");
+    useGeolocation(welcomeUI); // ask right away; city search stays available if it fails
+  }
+})();
+</script>
+</body>
+</html>
